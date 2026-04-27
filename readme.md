@@ -1,132 +1,132 @@
-# 📄 README — Escaneo de Datos en PHP & Servidor PHP Puro
+# � EscaneoPHP — Limpieza y Validación de Texto
+
+Una aplicación web que demuestra el uso de la clase `EscanerBasico` para limpiar, validar y extraer información de texto, incluyendo HTML, correos electrónicos y scripts potencialmente maliciosos.
+
+**Autores:** Jesús Alveo y Roniel Quintero
 
 ---
 
-## 📌 ¿Qué es el Escaneo de Datos en PHP?
+## ✨ Características Principales
 
-El **escaneo de datos** en PHP se refiere al proceso de leer, filtrar, validar y recorrer información proveniente de distintas fuentes como formularios, archivos, bases de datos o APIs. PHP ofrece herramientas nativas para hacerlo de forma segura y eficiente.
+- **Limpiar etiquetas HTML** — Elimina todas las etiquetas HTML de un texto
+- **Extraer correos** — Detecta y extrae correos electrónicos válidos
+- **Eliminar scripts** — Elimina etiquetas `<script>` y contenido malicioso
+- **Validaciones** — Verifica si el texto contiene HTML, correos o scripts
+- **Sanitización** — Limpia caracteres peligrosos del texto
 
 ---
 
-## 🔍 Funciones Clave para Escaneo de Datos
+## 📚 Métodos Disponibles
 
-### 1. `filter_input()` y `filter_var()` — Validar y sanear datos
+### Métodos de Instancia (requieren crear un objeto)
 
 ```php
-// Validar un email
-$email = filter_var("usuario@ejemplo.com", FILTER_VALIDATE_EMAIL);
+$escaner = new EscanerBasico($texto, $texto2, $texto3);
 
-// Sanear una cadena (eliminar caracteres especiales)
-$nombre = filter_var("  <Juan>  ", FILTER_SANITIZE_SPECIAL_CHARS);
+// Limpiar etiquetas HTML
+$resultado = $escaner->limpiarEtiquetas();
 
-// Leer y validar desde un formulario POST
-$edad = filter_input(INPUT_POST, 'edad', FILTER_VALIDATE_INT);
+// Extraer y limpiar correos
+$correos = $escaner->limpiarCorreos();
+
+// Eliminar scripts
+$limpio = $escaner->limpiarScripts();
 ```
 
-### 2. `preg_match()` — Escaneo con expresiones regulares
+### Métodos Estáticos (se usan sin crear instancia)
 
 ```php
-$texto = "Mi código postal es 12345";
+// Verificar si contiene correos
+if (EscanerBasico::tieneCorreos($texto)) {
+    echo "✅ Contiene correos";
+}
 
-if (preg_match('/\d{5}/', $texto, $coincidencias)) {
-    echo "Código encontrado: " . $coincidencias[0]; // 12345
+// Verificar si contiene etiquetas HTML
+if (EscanerBasico::tieneEtiquetas($texto)) {
+    echo "⚠️ Contiene HTML";
+}
+
+// Verificar si contiene scripts
+if (EscanerBasico::tieneScripts($texto)) {
+    echo "❌ Contiene scripts maliciosos";
+}
+
+// Sanitizar texto
+$seguro = EscanerBasico::sanitizar($texto);
+```
+
+---
+
+## 🧪 Ejemplos de Uso
+
+### Ejemplo 1: Limpiar HTML
+
+```php
+$entrada = "Hola <b>mundo</b>, esto es <em>importante</em>";
+$escaner = new EscanerBasico($entrada, $entrada, $entrada);
+$resultado = $escaner->limpiarEtiquetas();
+// Resultado: "Hola mundo, esto es importante"
+```
+
+### Ejemplo 2: Extraer Correos
+
+```php
+$entrada = "Contacta con juan@email.com o maria@empresa.com";
+$escaner = new EscanerBasico($entrada, $entrada, $entrada);
+$correos = $escaner->limpiarCorreos();
+// Resultado: "juan@email.com,maria@empresa.com"
+```
+
+### Ejemplo 3: Validar Contenido
+
+```php
+$entrada = "Este texto contiene usuario@email.com";
+
+// Verificar antes de procesar
+if (EscanerBasico::tieneCorreos($entrada)) {
+    $escaner = new EscanerBasico($entrada, $entrada, $entrada);
+    $correos = $escaner->limpiarCorreos();
 }
 ```
 
-### 3. `sscanf()` — Leer datos con formato específico
+---
 
-```php
-$linea = "Juan 25 Guatemala";
+## � Estructura del Proyecto
 
-// Extrae nombre (string), edad (int) y país (string)
-list($nombre, $edad, $pais) = sscanf($linea, "%s %d %s");
-
-echo $nombre; // Juan
-echo $edad;   // 25
-echo $pais;   // Guatemala
 ```
-
-### 4. `array_filter()` — Filtrar arreglos
-
-```php
-$datos = [1, "", null, "activo", 0, "inactivo"];
-
-// Elimina valores vacíos, null y 0
-$limpios = array_filter($datos);
-
-print_r($limpios); // ["activo", "inactivo"]
-```
-
-### 5. `fgetcsv()` — Escanear archivos CSV
-
-```php
-$archivo = fopen("datos.csv", "r");
-
-while (($fila = fgetcsv($archivo, 1000, ",")) !== false) {
-    echo "Nombre: " . $fila[0] . " | Edad: " . $fila[1] . PHP_EOL;
-}
-
-fclose($archivo);
+EscaneoPHP/
+├── index.php          ← Interfaz web principal
+├── styles.css         ← Estilos CSS
+├── readme.md          ← Este archivo
+├── src/
+│   └── Escaner.php    ← Clase EscanerBasico (métodos estáticos e instancias)
+└── .git/              ← Control de versiones
 ```
 
 ---
 
-## 🧪 Ejemplo Completo — Validar datos de un formulario
+## 🚀 Cómo Usar
 
-```php
-<?php
-$nombre = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_SPECIAL_CHARS);
-$email  = filter_input(INPUT_POST, 'email',  FILTER_VALIDATE_EMAIL);
-$edad   = filter_input(INPUT_POST, 'edad',   FILTER_VALIDATE_INT);
+### 1. Opción A: Con WAMP/XAMPP
 
-if (!$nombre || !$email || !$edad) {
-    echo "❌ Datos inválidos o incompletos.";
-} else {
-    echo "✅ Bienvenido, $nombre. Tu email es $email y tienes $edad años.";
-}
-?>
+Si el proyecto está en `C:\wamp64\www\EscaneoPHP`, simplemente accede a:
+```
+http://localhost/EscaneoPHP
 ```
 
----
-
-## 🚀 Ejecutar el Servidor PHP Puro (sin Apache/XAMPP)
-
-PHP incluye un **servidor web integrado** ideal para desarrollo local. No necesitas Apache ni Nginx.
-
-### ▶️ Comando básico
+### 2. Opción B: Con Servidor PHP Integrado
 
 ```bash
+# Navega a la carpeta del proyecto
+cd C:\wamp64\www\EscaneoPHP
+
+# Levanta el servidor en puerto 8000
 php -S localhost:8000
 ```
 
-Esto levanta el servidor en `http://localhost:8000` usando la carpeta actual como raíz.
+Luego accede a: `http://localhost:8000`
 
----
-
-### 📁 Especificar una carpeta raíz distinta
-
-```bash
-php -S localhost:8000 -t ruta/a/tu/proyecto
-```
-
-**Ejemplo:**
-```bash
-php -S localhost:8000 -t C:\proyectos\mi-app
-```
-
----
-
-### 📝 Usar un archivo de entrada personalizado (router)
-
-```bash
-php -S localhost:8000 router.php
-```
-
-Útil para frameworks o cuando quieres redirigir todas las rutas a un solo archivo.
-
----
-
-### 🌐 Hacerlo accesible en la red local
+### 3. Hacerlo accesible en la red local
 
 ```bash
 php -S 0.0.0.0:8000
@@ -136,23 +136,26 @@ Otros dispositivos en tu red podrán acceder usando tu IP local (ej: `http://192
 
 ---
 
+## 🎯 Funcionalidades de la Interfaz Web
 
+La aplicación web (`index.php`) ofrece tres ejemplos interactivos:
 
-## 📂 Estructura de proyecto
+### ✏️ Ejemplo 1: Limpiar Etiquetas
+- **Método de instancia:** `limpiarEtiquetas()`
+- **Método estático:** `tieneEtiquetas()`
+- Permite eliminar todas las etiquetas HTML del texto ingresado
 
-```
-EscaneoPHP/
-├── index.php       ← Punto de entrada
-├── ejemplos/
-│   └── scanner.php ← Lógica de escaneo
-└── data/
-    └── datos.csv   ← Archivos de datos
-```
+### 📧 Ejemplo 2: Extraer Correos
+- **Método de instancia:** `limpiarCorreos()`
+- **Método estático:** `tieneCorreos()`
+- Detecta y extrae correos electrónicos válidos
 
-Ejecutar desde la raíz del proyecto:
-```bash
-php -S localhost:8000 -t EscaneoPHP
-```
+### 🛡️ Ejemplo 3: Eliminar Scripts
+- **Método de instancia:** `limpiarScripts()`
+- **Método estático:** `tieneScripts()`
+- Elimina etiquetas `<script>` y contenido malicioso
 
----
+### 🧹 Acción General: Sanitizar
+- **Método estático:** `sanitizar()`
+- Limpia caracteres peligrosos del texto
 
